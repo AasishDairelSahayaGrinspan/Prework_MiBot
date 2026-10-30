@@ -7,6 +7,7 @@ This project counts doorway crossings in the supplied fixed-camera store video. 
 - `APPROACH.md`: the one-page approach and limitations note.
 - `approach_note.pdf`: PDF submission covering the approach, limitations, future work, and edge cases.
 - `presentation_script.md`: approximately two-minute explanation script for the submission/demo.
+- `presentation_script.pdf`: printable PDF version of the two-minute explanation script.
 
 ## Architecture
 

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Two-minute CCTV Counting Explanation</title>
+<style>
+  @page { size: A4; margin: 18mm 20mm; }
+  body { font-family: Arial, sans-serif; color: #172033; font-size: 11pt; line-height: 1.42; }
+  h1 { color: #123b68; font-size: 21pt; margin: 0 0 5px; }
+  .meta { color: #526579; font-size: 9pt; margin-bottom: 15px; }
+  p { margin: 0 0 9px; }
+</style>
+</head>
+<body>
+<h1>Two-minute explanation script</h1>
+<div class="meta">CCTV retail store people-counting pipeline</div>
+
+<p>Hello, this project is a CCTV people-counting pipeline for a retail store.</p>
+
+<p>The goal is to detect people entering and leaving, maintain a live headcount, assign tracking IDs, and produce an auditable event CSV.</p>
+
+<p>The pipeline uses the open-source YOLO26 medium model for person detection. It is restricted to the person class, so products and other objects are ignored. ByteTrack is then used to maintain an identity for each detected person across video frames.</p>
+
+<p>The doorway threshold is calibrated at the physical door in the lower-right of the camera view. For each person, the bottom-center point of the bounding box is tested against this line. A crossing is accepted only when the person remains on the new side for multiple frames. A hysteresis band and cooldown reduce false counts caused by detector jitter or someone standing near the door.</p>
+
+<p>The first two seconds are treated as initial occupancy, rather than new entries. After that, every accepted crossing updates the live headcount and is written to the CSV with the timestamp, person ID, event type, and resulting headcount.</p>
+
+<p>For occlusion, ByteTrack bridges short detector gaps using motion and association. For groups entering together, each visible person is tracked independently, so side-by-side people can generate separate events. Heavy full-body overlap can still cause undercounting. Re-entry is handled by maintaining state per track: a genuine OUT followed later by an IN is counted again, even if a new tracker ID is assigned after a long disappearance.</p>
+
+<p>Staff and customers are separated using a persistent cashier-zone rule. People observed in the configured cashier area for at least 0.75 seconds and 35 percent of their visible frames are marked as staff. Staff are shown with orange boxes and excluded from customer entry and exit totals. Other people are shown in green as customers. This is a zone-based heuristic, not clothing recognition.</p>
+
+<p>The output includes an annotated MP4 with bounding boxes, IDs, the red door line, staff and customer labels, and the live HUD. The CSV contains one row per IN or OUT event. There is also a one-page PDF note describing the architecture, limitations, and future improvements.</p>
+
+<p>The main limitations are heavy occlusion, wide-angle distortion, and the lack of manually labeled ground truth. With more time, I would tune the system on annotated entrance footage, compare ByteTrack with ReID-based tracking, fine-tune the detector for this camera, and replace the staff heuristic with a staff roster or trained classifier.</p>
+
+<p>Thank you.</p>
+</body>
+</html>
