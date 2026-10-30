@@ -5,6 +5,7 @@ This project counts doorway crossings in the supplied fixed-camera store video. 
 - `output/annotated_yolo26_door.mp4`: bounding boxes, ByteTrack IDs, doorway line, IN/OUT totals, and live headcount.
 - `output/events_yolo26_door.csv`: `timestamp,person_id,event,headcount`.
 - `APPROACH.md`: the one-page approach and limitations note.
+- `approach_note.pdf`: PDF submission covering the approach, limitations, future work, and edge cases.
 
 ## Architecture
 

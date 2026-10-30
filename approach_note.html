@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Store People Counting - Approach Note</title>
+<style>
+  @page { size: A4; margin: 14mm 16mm; }
+  body { font-family: Arial, sans-serif; color: #172033; font-size: 10.2pt; line-height: 1.28; }
+  h1 { color: #123b68; font-size: 20pt; margin: 0 0 3px; }
+  h2 { color: #1769aa; font-size: 12.5pt; margin: 10px 0 3px; border-bottom: 1px solid #c9d8e6; }
+  p { margin: 4px 0; }
+  ul { margin: 3px 0 4px 18px; padding: 0; }
+  li { margin: 2px 0; }
+  .meta { color: #526579; font-size: 9pt; margin-bottom: 8px; }
+  .box { background: #eef5fb; border-left: 4px solid #1769aa; padding: 6px 9px; margin: 6px 0; }
+  strong { color: #123b68; }
+</style>
+</head>
+<body>
+<h1>Store Entry/Exit People Counting</h1>
+<div class="meta">One-page approach note | YOLO26m + ByteTrack | Fixed 1270x720 CCTV camera</div>
+
+<h2>Approach</h2>
+<p>People are detected with the open-source <strong>YOLO26m</strong> model, restricted to the COCO
+<em>person</em> class. <strong>ByteTrack</strong> maintains a per-person ID across frames. The
+doorway gate is calibrated at the lower-right physical threshold from <strong>(900,720) to
+(1260,500)</strong>. The bottom-center foot point of each box is used for crossing decisions.</p>
+<p>To reduce false events, the counter uses a line hysteresis band, stable-side dwell across
+multiple frames, a two-second initial-occupancy warm-up, and a per-track cooldown. Each accepted
+crossing updates the live headcount and is written to
+<strong>timestamp, person_id, event, headcount</strong>. The video overlay shows boxes, IDs,
+the gate, customer/staff labels, and live totals.</p>
+
+<h2>Edge-case handling</h2>
+<ul>
+  <li><strong>Occlusion:</strong> ByteTrack bridges short detector gaps using motion and association.
+  Hysteresis and stable-side dwell prevent a partially hidden box from immediately flipping sides.
+  Long, complete occlusions can still cause an ID switch.</li>
+  <li><strong>Groups entering together:</strong> every visible person receives an independent
+  detection and track, so side-by-side people generate separate events. Full body overlap can
+  still merge detections and cause undercounting until people separate.</li>
+  <li><strong>Re-entry:</strong> state is tracked per ID and cooldown suppresses rapid jitter.
+  A genuine OUT followed later by IN is accepted, even when a long disappearance causes a new ID.</li>
+  <li><strong>Staff vs. customers:</strong> a persistent cashier-zone polygon
+  (<strong>0,0;210,0;210,500;0,500</strong>) marks tracks observed there for at least 0.75 seconds
+  and 35% of visible frames as <strong>STAFF</strong>. Staff are orange and excluded from customer
+  totals; all other tracks are green <strong>CUSTOMER</strong> tracks. This is a zone/behavior
+  heuristic, not clothing recognition.</li>
+</ul>
+
+<h2>What failed / limitations</h2>
+<p>The wide-angle camera and heavy overlap near the entrance make perfect identity continuity
+impossible. A line counter cannot recover a person fully hidden behind a group, and the staff zone
+can misclassify a customer who enters the cashier area. The clip has no ground-truth annotations,
+so no benchmark accuracy is claimed; the CSV is an auditable event output.</p>
+
+<h2>What I would do with more time</h2>
+<div class="box">Annotate entrance-heavy validation segments; tune confidence, gate placement, and
+tracking thresholds; compare ByteTrack with BoT-SORT/ReID; add entrance-region tracklet stitching;
+fine-tune a camera-specific overhead-person detector; and replace the staff heuristic with a staff
+roster, calibrated zone policy, or trained appearance/ReID classifier. I would also export
+low-confidence/overlap cases for human review.</div>
+</body>
+</html>
