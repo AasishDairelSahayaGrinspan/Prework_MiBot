@@ -40,6 +40,21 @@ The final generated files are available under `output/`:
 
 Requires Python 3.12+, `ffmpeg` is not required by the script, and a CPU or CUDA-capable machine.
 
+## Models and libraries used
+
+- **YOLO26m (`yolo26m.pt`)** — open-source Ultralytics detector, restricted to the COCO `person` class. The medium model was selected for higher detection quality than the small model; `yolo26s.pt` is available for faster CPU runs.
+- **ByteTrack** — Ultralytics multi-object tracker used to maintain person IDs through short detector gaps and occlusions.
+- **OpenCV** — video decoding/encoding, drawing boxes, IDs, doorway line, staff zone, and HUD.
+- **NumPy** — polygon and geometry operations for the doorway and staff-zone logic.
+- **Python standard library** — CSV writing, command-line arguments, file handling, and event state.
+- **Mermaid** — architecture diagram embedded in this README; it can be edited/exported with Mermaid Editor.
+
+The counting logic is custom code in `people_counter.py`: doorway threshold crossing, hysteresis, stable-side dwell, cooldown, initial occupancy warm-up, customer/staff zone classification, and live headcount reconciliation.
+
+### AI assistance
+
+The implementation and documentation were developed with AI coding assistance. The runtime used here selects the underlying model automatically, so an exact underlying model name is not asserted in the repository. If your submission requires the requested label, describe the assistance as **GPT-5.6-Luna requested by the project owner**, while the reproducible runtime dependency remains the open-source YOLO26m + ByteTrack pipeline above.
+
 ```bash
 python3.12 -m venv .venv
 .venv/bin/pip install -r requirements.txt
