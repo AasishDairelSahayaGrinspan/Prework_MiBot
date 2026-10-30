@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.DS_Store
+*.pyc
+*.pt
+debug/
+frames/
+output/annotated.mp4
+output/annotated_yolo26.mp4
+output/annotated_yolo26_staff.mp4
+output/events.csv
+output/events_yolo26.csv
+output/events_yolo26_staff.csv
+output/sample*.jpg
