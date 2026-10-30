@@ -6,6 +6,7 @@ This project counts doorway crossings in the supplied fixed-camera store video. 
 - `output/events_yolo26_door.csv`: `timestamp,person_id,event,headcount`.
 - `APPROACH.md`: the one-page approach and limitations note.
 - `approach_note.pdf`: PDF submission covering the approach, limitations, future work, and edge cases.
+- `presentation_script.md`: approximately two-minute explanation script for the submission/demo.
 
 ## Architecture
 
